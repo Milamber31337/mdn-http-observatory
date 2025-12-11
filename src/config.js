@@ -29,6 +29,12 @@ const SCHEMA = {
     },
   },
   database: {
+    type: {
+      doc: "Database backend to use: postgresql or neo4j",
+      format: ["postgresql", "neo4j"],
+      default: "postgresql",
+      env: "HTTPOBS_DATABASE_TYPE",
+    },
     database: {
       doc: "The name of the database to use",
       format: "String",
@@ -65,6 +71,33 @@ const SCHEMA = {
       format: "Boolean",
       default: false,
       env: "PGSSLMODE",
+    },
+    neo4j: {
+      uri: {
+        doc: "Neo4j AuraDB connection URI",
+        format: "String",
+        default: "neo4j+s://localhost",
+        env: "NEO4J_URI",
+      },
+      username: {
+        doc: "Neo4j username",
+        format: "String",
+        default: "neo4j",
+        env: "NEO4J_USERNAME",
+      },
+      password: {
+        doc: "Neo4j password",
+        format: "String",
+        default: "",
+        sensitive: true,
+        env: "NEO4J_PASSWORD",
+      },
+      database: {
+        doc: "Neo4j database name",
+        format: "String",
+        default: "neo4j",
+        env: "NEO4J_DATABASE",
+      },
     },
   },
   api: {

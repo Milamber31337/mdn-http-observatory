@@ -2,6 +2,7 @@ import { CONFIG } from "../config.js";
 import format from "pg-format";
 import { ALGORITHM_VERSION } from "../constants.js";
 import pg from "pg";
+import { createDatabaseAdapter } from "./adapter.js";
 
 // Use native bindings instead of standard bindings
 // @ts-ignore - pg.native is optional and may not be in types
@@ -27,6 +28,14 @@ export const poolOptions = {
   maxUses: 10000, // close (and replace) a connection after it has been used 10000 times
   native: true,
 };
+
+/**
+ * Create a database adapter based on configuration
+ * @returns {Promise<any>}
+ */
+export async function createDatabaseAdapterInstance() {
+  return createDatabaseAdapter(CONFIG);
+}
 
 /**
  *
