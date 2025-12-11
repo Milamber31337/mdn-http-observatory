@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide walks you through setting up a complete local testing environment for the Neo4j v2.0 schema improvements.
+This guide walks you through setting up a complete local testing environment for the Neo4j v2.0 schema improvements. Since you use **Neo4j Aura**, we've optimized the steps for your cloud setup.
 
 ---
 
@@ -11,7 +11,7 @@ This guide walks you through setting up a complete local testing environment for
 ### Required Software
 - **Node.js:** ≥24.0.0 (check with `node --version`)
 - **npm:** ≥9.0.0 (check with `npm --version`)
-- **Neo4j:** Community or AuraDB instance
+- **Neo4j Aura:** Active instance with credentials
 - **Git:** For version control
 
 ### Check Your Setup
@@ -23,16 +23,61 @@ git --version     # Should be installed
 
 ---
 
-## Option 1: Local Neo4j (Easiest for Testing)
+## Your Setup: Neo4j AuraDB (Cloud)
 
-### Step 1: Install Neo4j Community Edition
+### Step 1: Gather Aura Credentials
 
-**Windows/Mac/Linux:**
-1. Download from https://neo4j.com/download-community-edition/
-2. Install and follow setup wizard
-3. Remember your password (default username: `neo4j`)
+1. Go to https://console.neo4j.io
+2. Find your instance in the list
+3. Click "Copy connection string"
+4. Credentials include:
+   - URI: `neo4j+s://xxxxx.databases.neo4j.io`
+   - Username: `neo4j`
+   - Password: (from instance creation)
 
-**Or use Docker (Recommended):**
+### Step 2: Configure Environment
+
+Create `.env.test` in project root:
+```env
+HTTPOBS_DATABASE_TYPE=neo4j
+NEO4J_URI=neo4j+s://xxxxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your_aura_password
+NEO4J_DATABASE=neo4j
+```
+
+Or set environment variables in PowerShell:
+```powershell
+$env:HTTPOBS_DATABASE_TYPE = "neo4j"
+$env:NEO4J_URI = "neo4j+s://your-instance.databases.neo4j.io"
+$env:NEO4J_USERNAME = "neo4j"
+$env:NEO4J_PASSWORD = "your_aura_password"
+$env:NEO4J_DATABASE = "neo4j"
+```
+
+### Step 3: Verify Connection
+
+```powershell
+# Install cypher-shell globally (one-time)
+npm install -g cypher-shell
+
+# Test connection (use your actual Aura URI and password)
+cypher-shell -a neo4j+s://your-instance.databases.neo4j.io -u neo4j -p your_aura_password "RETURN 1"
+```
+
+Expected output: `1`
+
+If you get connection errors:
+- Verify your Aura instance is running (console.neo4j.io)
+- Check that the password is correct
+- Ensure your password doesn't have special characters (or escape them)
+
+---
+
+## Alternative Option 1: Local Neo4j (Docker)
+
+### Step 1: Install Neo4j via Docker
+
 ```powershell
 # Pull Neo4j image
 docker pull neo4j:latest
@@ -48,29 +93,8 @@ docker run --name neo4j-test `
 # Username: neo4j, Password: testpassword
 ```
 
-### Step 2: Verify Neo4j Connection
+### Step 2: Configure for Testing
 
-```powershell
-# Test connection (replace password)
-npm install -g cypher-shell
-
-cypher-shell -a neo4j://localhost:7687 -u neo4j -p testpassword "RETURN 1"
-```
-
-Expected output: `1`
-
-### Step 3: Configure for Testing
-
-Create `.env.test` in project root:
-```env
-HTTPOBS_DATABASE_TYPE=neo4j
-NEO4J_URI=neo4j://localhost:7687
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=testpassword
-NEO4J_DATABASE=neo4j
-```
-
-Or set environment variables directly:
 ```powershell
 $env:HTTPOBS_DATABASE_TYPE = "neo4j"
 $env:NEO4J_URI = "neo4j://localhost:7687"
@@ -81,23 +105,7 @@ $env:NEO4J_DATABASE = "neo4j"
 
 ---
 
-## Option 2: Neo4j AuraDB (Cloud - Better for CI/CD)
-
-### Step 1: Create Free AuraDB Instance
-
-1. Go to https://neo4j.com/cloud/aura/
-2. Sign up for free account
-3. Create new instance
-4. Copy connection details:
-   - URI: `neo4j+s://xxxxx.databases.neo4j.io`
-   - Username: `neo4j`
-   - Password: (saved during creation)
-
-### Step 2: Configure Environment
-
-```env
-HTTPOBS_DATABASE_TYPE=neo4j
-NEO4J_URI=neo4j+s://xxxxx.databases.neo4j.io
+## Alternative Option 2: Local Neo4j (Native Installation)
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your_password
 NEO4J_DATABASE=neo4j

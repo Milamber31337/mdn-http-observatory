@@ -1,8 +1,29 @@
 # 🧪 Local Testing Options - Quick Summary
 
-## Fastest Way to Test (⏱️ 5 minutes)
+## Fastest Way to Test (⏱️ 2-3 minutes)
 
-### Option A: Docker (Recommended)
+### Option A: Neo4j Aura (Your Setup) ⭐
+
+```powershell
+# 1. Get credentials from Aura console (https://console.neo4j.io)
+# 2. Set environment variables
+$env:HTTPOBS_DATABASE_TYPE = "neo4j"
+$env:NEO4J_URI = "neo4j+s://your-instance.databases.neo4j.io"
+$env:NEO4J_USERNAME = "neo4j"
+$env:NEO4J_PASSWORD = "your_aura_password"
+$env:NEO4J_DATABASE = "neo4j"
+
+# 3. Run tests
+npm install
+node test-v2-quick.js
+```
+
+**Time:** 2-3 minutes
+**Effort:** Copy credentials from Aura console
+**Cleanup:** None (use same instance, just clear data)
+**URL Pattern:** `neo4j+s://abc123def.databases.neo4j.io` (from Aura)
+
+### Option B: Docker (Alternative)
 
 ```powershell
 # 1. Start Neo4j
@@ -22,31 +43,18 @@ node test-v2-quick.js
 **Effort:** Minimal
 **Cleanup:** `docker rm -f mdn-neo4j-test`
 
-### Option B: Local Neo4j
+### Option C: Local Neo4j (Advanced)
 
 ```powershell
 # 1. Download & install from https://neo4j.com/download-community-edition/
 # 2. Start Neo4j (default: localhost:7687)
-# 3. Set environment variables (same as above)
+# 3. Set environment variables (same as Docker above)
 # 4. npm install && npm test
 ```
 
 **Time:** 10-15 minutes
 **Effort:** Moderate
 **Cleanup:** Uninstall or stop service
-
-### Option C: Neo4j AuraDB (Cloud)
-
-```powershell
-# 1. Sign up at https://neo4j.com/cloud/aura/
-# 2. Create free instance
-# 3. Set environment variables with cloud credentials
-# 4. npm install && npm test
-```
-
-**Time:** 5 minutes (signup) + setup
-**Effort:** Minimal
-**Cleanup:** Delete cloud instance
 
 ---
 
@@ -183,20 +191,26 @@ Test 3: Domain aggregation
 ## Environment Variables Cheat Sheet
 
 ```powershell
+# For Neo4j Aura (YOUR SETUP) ⭐
+$env:HTTPOBS_DATABASE_TYPE = "neo4j"
+$env:NEO4J_URI = "neo4j+s://your-instance.databases.neo4j.io"
+$env:NEO4J_USERNAME = "neo4j"
+$env:NEO4J_PASSWORD = "your_aura_password"
+$env:NEO4J_DATABASE = "neo4j"
+
+# For Docker
+$env:HTTPOBS_DATABASE_TYPE = "neo4j"
+$env:NEO4J_URI = "neo4j://localhost:7687"
+$env:NEO4J_USERNAME = "neo4j"
+$env:NEO4J_PASSWORD = "testpass123"
+$env:NEO4J_DATABASE = "neo4j"
+
 # For local Neo4j
 $env:HTTPOBS_DATABASE_TYPE = "neo4j"
 $env:NEO4J_URI = "neo4j://localhost:7687"
 $env:NEO4J_USERNAME = "neo4j"
-$env:NEO4J_PASSWORD = "testpassword"
+$env:NEO4J_PASSWORD = "your_local_password"
 $env:NEO4J_DATABASE = "neo4j"
-
-# For Docker
-$env:NEO4J_URI = "neo4j://localhost:7687"  # Same as above
-$env:NEO4J_PASSWORD = "testpass123"
-
-# For AuraDB (example)
-$env:NEO4J_URI = "neo4j+s://xxxxx.databases.neo4j.io"
-$env:NEO4J_PASSWORD = "your_aura_password"
 ```
 
 ---
@@ -204,8 +218,7 @@ $env:NEO4J_PASSWORD = "your_aura_password"
 ## Command Cheat Sheet
 
 ```powershell
-# Quick start
-docker run -d --name mdn-neo4j-test -p 7687:7687 -e NEO4J_AUTH=neo4j/testpass123 neo4j:latest
+# Quick start with Aura (YOUR SETUP)
 npm install
 node test-v2-quick.js
 
@@ -218,18 +231,18 @@ npm test
 # Specific test
 npm test -- --grep "Domain"
 
-# View logs
-docker logs -f mdn-neo4j-test
-
-# Clear database
-docker exec mdn-neo4j-test cypher-shell -u neo4j -p testpass123 "MATCH (n) DETACH DELETE n"
-
-# Stop/remove
-docker stop mdn-neo4j-test
-docker rm mdn-neo4j-test
-
 # Full workflow test
 node test-v2-migration.js
+
+# Performance test
+node test-performance.js
+
+# For Docker alternative
+docker run -d --name mdn-neo4j-test -p 7687:7687 -e NEO4J_AUTH=neo4j/testpass123 neo4j:latest
+docker logs -f mdn-neo4j-test
+docker exec mdn-neo4j-test cypher-shell -u neo4j -p testpass123 "MATCH (n) DETACH DELETE n"
+docker stop mdn-neo4j-test && docker rm mdn-neo4j-test
+```
 
 # Performance test
 node test-performance.js
